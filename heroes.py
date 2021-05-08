@@ -19,8 +19,9 @@ def load_image(name, color_key=None):
 
 class Base_Hero(pygame.sprite.Sprite):
 
-    def __init__(self, group, control_config, orientation, thumbnail):
-        super().__init__(group)
+    def __init__(self, control_config, orientation, thumbnail):
+        super().__init__(all_sprites)
+        self.add(heroes_sprites)
         self.control_config = control_config
         self.mode = "auto"
 
@@ -61,8 +62,8 @@ class Base_Hero(pygame.sprite.Sprite):
 class HeroA(Base_Hero):
     thumbnail = load_image("heroA_thumbnail.jpg", -1) #must be 300x300
 
-    def __init__(self, group, control_config, orientation):
-        super().__init__(group, control_config, orientation, HeroA.thumbnail)
+    def __init__(self, control_config, orientation):
+        super().__init__(control_config, orientation, HeroA.thumbnail)
         self.max_xp = 1000
 
     def update(self, *args):
@@ -73,8 +74,8 @@ class HeroA(Base_Hero):
 class HeroB(Base_Hero):
     thumbnail = load_image("heroA_thumbnail.jpg", -1) #must be 300x300
 
-    def __init__(self, group, control_config, orientation):
-        super().__init__(group, control_config, orientation, HeroB.thumbnail)
+    def __init__(self, control_config, orientation):
+        super().__init__(control_config, orientation, HeroB.thumbnail)
         self.max_xp = 850
 
     def update(self, *args):
