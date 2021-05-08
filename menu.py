@@ -61,9 +61,9 @@ def terminate():
 
 
 def arrange_content(surface, text, width_border, image):
-    title_height = 0.1* WIN_HEIGHT
-    thumbnail_height = 0.2* WIN_HEIGHT
-    description_height = 0.5* WIN_HEIGHT
+    title_height = 0.05* WIN_HEIGHT
+    thumbnail_height = 0.1* WIN_HEIGHT
+    description_height = 0.6* WIN_HEIGHT
 
     #title
     string_rendered = TITLE_FONT.render(text.get('title'), 1, TITLE_COLOR)
@@ -76,7 +76,7 @@ def arrange_content(surface, text, width_border, image):
     #description
     for i, line in enumerate(text.get('description')):
         string_rendered = DESCRIPTION_FONT.render(line, 1, DESCRIPTION_COLOR)
-        string_rect = string_rendered.get_rect().move((width_border, description_height+i*30))
+        string_rect = string_rendered.get_rect().move((width_border, description_height+i*20))
         surface.blit(string_rendered, string_rect)
     
 
@@ -92,7 +92,7 @@ def start_screen(surface, heroA, heroB):
                                         "описание 2",
                                         "3 Способность (клавиша Y)",
                                         "описание 3",
-                                        "Чтобы перемещать героя нажимайте клавишы W A S D"]}
+                                        "Чтобы перемещать героя", "нажимайте клавишы W A S D"]}
 
     right_player_text = {"title": "Игрок 2",
                         "description": ["1 Способность (клавиша 1NUM):",
@@ -105,13 +105,13 @@ def start_screen(surface, heroA, heroB):
                                         "P.S NUM это цифры справа от стрелок"]}
 
     arrange_content(surface, text=left_player_text, width_border=0.1*WIN_WIDTH, image=heroA.thumbnail)
-    arrange_content(surface, text=left_player_text, width_border=0.6*WIN_WIDTH, image=heroB.thumbnail)
+    arrange_content(surface, text=right_player_text, width_border=0.6*WIN_WIDTH, image=heroB.thumbnail)
     pygame.display.flip()
 
-    button_left_single = Button(surface, (0.1*WIN_WIDTH, 0.8*WIN_HEIGHT), text="Игрок")
-    button_left_auto = Button(surface, (0.1*WIN_WIDTH + button_left_single.rect.width + 50, 0.8*WIN_HEIGHT), text="Бот")
-    button_right_single = Button(surface, (0.6*WIN_WIDTH, 0.8*WIN_HEIGHT), text="Игрок")
-    button_right_auto = Button(surface, (0.6*WIN_WIDTH + button_right_single.rect.width + 50, 0.8*WIN_HEIGHT), text="Бот")
+    button_left_single = Button(surface, (0.1*WIN_WIDTH, 0.9*WIN_HEIGHT), text="Игрок")
+    button_left_auto = Button(surface, (0.1*WIN_WIDTH + button_left_single.rect.width + 50, 0.9*WIN_HEIGHT), text="Бот")
+    button_right_single = Button(surface, (0.6*WIN_WIDTH, 0.9*WIN_HEIGHT), text="Игрок")
+    button_right_auto = Button(surface, (0.6*WIN_WIDTH + button_right_single.rect.width + 50, 0.9*WIN_HEIGHT), text="Бот")
 
     left_group = (button_left_single, button_left_auto)
     right_group = (button_right_single, button_right_auto)
