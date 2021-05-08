@@ -18,9 +18,8 @@ def load_image(name, color_key=None):
 
 
 class Base_Hero(pygame.sprite.Sprite):
-    thumbnail = load_image("basehero_thumbnail.jpg") #must be 300x300
 
-    def __init__(self, group, control_config, orientation):
+    def __init__(self, group, control_config, orientation, thumbnail):
         super().__init__(group)
         self.control_config = control_config
         self.mode = "auto"
@@ -31,7 +30,7 @@ class Base_Hero(pygame.sprite.Sprite):
         self.left = control_config.get("left")
 
         self.orientation = orientation
-        self.thumbnail = Base_Hero.thumbnail 
+        self.thumbnail = thumbnail
         if orientation == "rightward": #original image looks left to right
             self.thumbnail = pygame.transform.flip(self.thumbnail, True, False)
         self.image = pygame.transform.scale(self.thumbnail, (100, 100))
@@ -60,11 +59,11 @@ class HeroA(Base_Hero):
     thumbnail = load_image("heroA_thumbnail.jpg") #must be 300x300
 
     def __init__(self, group, control_config, orientation):
-        super().__init__(group, control_config, orientation)
+        super().__init__(group, control_config, orientation, HeroA.thumbnail)
 
 
 class HeroB(Base_Hero):
     thumbnail = load_image("heroA_thumbnail.jpg") #must be 300x300
 
     def __init__(self, group, control_config, orientation):
-        super().__init__(group, control_config, orientation)
+        super().__init__(group, control_config, orientation, HeroB.thumbnail)
