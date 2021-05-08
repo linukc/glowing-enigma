@@ -43,27 +43,40 @@ class Base_Hero(pygame.sprite.Sprite):
             self.rect.x = 0.8*WIN_WIDTH
             self.rect.y = 0.4*WIN_HEIGHT
 
-        self.vx = 3
-        self.vy = 3
+        self.vx = 5
+        self.vy = 5
+        self.max_xp = 1500
 
-    def update(self, *args):
-        keys = args[0]
+    def update(self, keys):
+        #xp bar
+        pygame.draw.rect(self.image, RED, (0, 0, self.rect.width, 10), border_radius=3)
+        pygame.draw.rect(self.image, BLACK, (0, 0, self.rect.width, 10), width=1, border_radius=3)
+        #movements
         if self.mode == "player":
             x = self.vx * (keys[self.right] - keys[self.left])
             y = self.vy * (keys[self.down] - keys[self.up])
             self.rect = self.rect.move((x, y))
 
 
-
 class HeroA(Base_Hero):
-    thumbnail = load_image("heroA_thumbnail.jpg") #must be 300x300
+    thumbnail = load_image("heroA_thumbnail.jpg", -1) #must be 300x300
 
     def __init__(self, group, control_config, orientation):
         super().__init__(group, control_config, orientation, HeroA.thumbnail)
+        self.max_xp = 1000
+
+    def update(self, *args):
+        keys = args[0]
+        super().update(keys)
 
 
 class HeroB(Base_Hero):
-    thumbnail = load_image("heroA_thumbnail.jpg") #must be 300x300
+    thumbnail = load_image("heroA_thumbnail.jpg", -1) #must be 300x300
 
     def __init__(self, group, control_config, orientation):
         super().__init__(group, control_config, orientation, HeroB.thumbnail)
+        self.max_xp = 850
+
+    def update(self, *args):
+        keys = args[0]
+        super().update(keys)

@@ -25,9 +25,9 @@ if __name__ == "__main__":
                         "second_cast": pygame.K_KP2,
                         "third_cast": pygame.K_KP3}
 
-    all_sprites = pygame.sprite.Group()
-    heroA = HeroA(all_sprites, control_config_A, orientation="leftward")
-    heroB = HeroB(all_sprites, control_config_B, orientation="rightward")
+    heroes_sprites = pygame.sprite.Group()
+    heroA = HeroA(heroes_sprites, control_config_A, orientation="leftward")
+    heroB = HeroB(heroes_sprites, control_config_B, orientation="rightward")
 
     game_config = start_screen(sc, heroA, heroB)
     heroA.mode = game_config.get("left_player_mode")
@@ -43,10 +43,10 @@ if __name__ == "__main__":
                 running = False
         
         keys = pygame.key.get_pressed()
-        all_sprites.update(keys)
+        heroes_sprites.update(keys)
 
         sc.fill(WHITE)
-        all_sprites.draw(sc)
+        heroes_sprites.draw(sc)
         pygame.display.flip()
 
         clock.tick(FPS)
