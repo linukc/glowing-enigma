@@ -219,7 +219,7 @@ class Base_Hero(pygame.sprite.Sprite):
             self.rect = self.rect.move((x, y))
 
             #bot's actions
-            if abs(self.rect.center[1] - self.get_opponent().rect.center[1]) <= 450:
+            if abs(self.rect.center[1] - self.get_opponent().rect.center[1]) <= 200:
                 self.make_first_cast()
             self.make_second_cast()
 
