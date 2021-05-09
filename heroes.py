@@ -17,6 +17,33 @@ def load_image(name, color_key=None):
     return image
 
 
+class Bullet(pygame.sprite.Sprite):
+    image = load_image("bullet.png")
+
+    def __init__(self, pos, orientation, opponent):
+        super().__init__(all_sprites)
+        self.image = Bullet.image
+        self.orientation = orientation
+        self.opponent = opponent
+        if self.orientation == "rightward": #original image looks left to right
+            self.image = pygame.transform.flip(self.image, True, False)
+        self.image = pygame.transform.scale(self.image, (30, 10))
+        self.rect = self.image.get_rect()
+        self.rect.x = pos[0]
+        self.rect.y = pos[1]
+        self.vx = 15
+
+    def update(self, *args):
+        if self.orientation == "leftward":
+            self.rect = self.rect.move((self.vx, 0))
+        else:
+            self.rect = self.rect.move((-self.vx, 0))
+        
+        if pygame.sprite.spritecollideany(self, self.opponent):
+            self.opponent.sprite.xp -= 5
+            self.kill()
+
+
 class Base_Hero(pygame.sprite.Sprite):
 
     def __init__(self, control_config, orientation, thumbnail):
@@ -29,6 +56,12 @@ class Base_Hero(pygame.sprite.Sprite):
         self.down = control_config.get("down")
         self.right = control_config.get("right")
         self.left = control_config.get("left")
+
+        self.first_cast = control_config.get("first_cast")
+        self.first_cast_pressed= pygame.time.get_ticks()
+
+        self.second_cast = control_config.get("second_cast")
+        self.third_cast = control_config.get("third_cast")
 
         self.orientation = orientation
         self.thumbnail = thumbnail
@@ -46,6 +79,7 @@ class Base_Hero(pygame.sprite.Sprite):
 
         self.x_step = 5
         self.y_step = 5
+
         #for collidence with borders
         self.x_direction = 1 # 1 if moved along x axes else -1;
         self.y_direction = 1 # 1 if moved along y axes else -1;
@@ -55,20 +89,29 @@ class Base_Hero(pygame.sprite.Sprite):
     def get_opponent(self):
         return [sprite for sprite in heroes_sprites.sprites() if sprite != self][0] #only 2 heroes
 
-    def update(self, keys):
+    def update(self, *args):
+        keys = args[0]
         #XP bar
         pygame.draw.rect(self.image, WHITE, (0, 0, self.rect.width, 10), border_radius=2)
         pygame.draw.rect(self.image, RED, (0, 0, self.xp*(self.rect.width/self.max_xp), 10), border_radius=2)
         pygame.draw.rect(self.image, BLACK, (0, 0, self.rect.width, 10), width=1, border_radius=2)
 
+        #base cast (shot)
+        if keys[self.first_cast]:
+            time = pygame.time.get_ticks()
+            if time - self.first_cast_pressed > 1000:
+                Bullet((self.rect.x+self.rect.width, self.rect.y+self.rect.height//2), self.orientation, 
+                    pygame.sprite.GroupSingle(self.get_opponent()))
+                self.first_cast_pressed = time
+
         #movements
         if self.mode == "player":
             x = self.x_step * (keys[self.right] - keys[self.left])
             y = self.y_step* (keys[self.down] - keys[self.up])
-        else: #auto
+        else:#auto
             x = 0
             delta_y = self.rect.y - self.get_opponent().rect.y
-            y = -self.y_step if delta_y>0 else (self.y_step if delta_y<0 else 0) #if elif else
+            y = -self.y_step if delta_y>self.y_step else (self.y_step if delta_y<-self.y_step else 0) #if elif else
 
         self.rect = self.rect.move((x, y))
 
@@ -111,8 +154,8 @@ class HeroA(Base_Hero):
 
     def update(self, *args):
         keys = args[0]
+        events = args[1]
         super().update(keys)
-        print(self.x_direction, self.y_direction)
 
 
 class HeroB(Base_Hero):
@@ -124,6 +167,10 @@ class HeroB(Base_Hero):
 
     def update(self, *args):
         keys = args[0]
+        events = args[1]
         super().update(keys)
+        #for event in events:
+            #if event.type == INCREASE_RADIUS:
+                #print(":)") #  использовать для анимаций?
 
     #создает стенку которая отражает пули (добавляем в group для коллизии движения и отдельную  группу для коллизии пули)

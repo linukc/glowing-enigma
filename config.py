@@ -25,3 +25,5 @@ all_sprites = pygame.sprite.Group()
 horizontal_borders = pygame.sprite.Group()
 vertical_borders = pygame.sprite.Group()
 heroes_sprites = pygame.sprite.Group()
+
+#INCREASE_RADIUS = pygame.USEREVENT + 1 #24 to 32
