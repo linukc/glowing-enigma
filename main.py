@@ -21,6 +21,9 @@ if __name__ == "__main__":
     Border(WIN_WIDTH - 5, 5, WIN_WIDTH - 5, WIN_HEIGHT - 5)
     Border(WIN_WIDTH // 2, 5, WIN_WIDTH // 2, WIN_HEIGHT - 5)
 
+    #surf_left = pygame.Surface(WIN_WIDTH//2, WIN_HEIGHT)
+    #surf_right = pygame.Surface(WIN_WIDTH//2, WIN_HEIGHT)
+
     game_config = start_screen(sc, heroA, heroB)
     heroA.mode = game_config.get("left_player_mode")
     heroB.mode = game_config.get("right_player_mode")
@@ -34,11 +37,12 @@ if __name__ == "__main__":
             if event.type == pygame.QUIT:
                 running = False
         
+        sc.fill(WHITE)
+        all_sprites.draw(sc)
+
         keys = pygame.key.get_pressed()
         heroes_sprites.update(keys)
 
-        sc.fill(WHITE)
-        all_sprites.draw(sc)
         pygame.display.flip()
 
         clock.tick(FPS)

@@ -1,7 +1,7 @@
 import pygame
 
 WIN_WIDTH = 1000
-WIN_HEIGHT = 800
+WIN_HEIGHT = 700
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -24,4 +24,4 @@ control_config_B = {"up": pygame.K_UP,
 all_sprites = pygame.sprite.Group()
 horizontal_borders = pygame.sprite.Group()
 vertical_borders = pygame.sprite.Group()
-heroes_sprites = pygame.sprite.Group() #heroes and their subsprites
+heroes_sprites = pygame.sprite.Group()
