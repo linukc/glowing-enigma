@@ -9,6 +9,7 @@ class Bullet(pygame.sprite.Sprite):
 
     def __init__(self, pos, orientation, opponent):
         super().__init__(all_sprites)
+        self.add(bullets_sprites)
         self.image = Bullet.image
         self.orientation = orientation
         self.opponent = opponent
@@ -37,7 +38,7 @@ class Base_Hero(pygame.sprite.Sprite):
         super().__init__(all_sprites)
         self.add(heroes_sprites)
         self.control_config = control_config
-        self.mode = "auto"
+        self.mode = "player"
         self.locked = False
 
         self.up = control_config.get("up")
@@ -46,7 +47,7 @@ class Base_Hero(pygame.sprite.Sprite):
         self.left = control_config.get("left")
 
         self.first_cast = control_config.get("first_cast")
-        self.first_cast_pressed= pygame.time.get_ticks()
+        self.first_cast_pressed = pygame.time.get_ticks()
 
         self.second_cast = control_config.get("second_cast")
         self.third_cast = control_config.get("third_cast")
@@ -59,11 +60,11 @@ class Base_Hero(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
         if orientation == "leftward": #player 1
-            self.rect.x = 0.1*WIN_WIDTH
-            self.rect.y = 0.4*WIN_HEIGHT
+            self.rect.x = 20
+            self.rect.y = 30
         else: #player 2
-            self.rect.x = 0.8*WIN_WIDTH
-            self.rect.y = 0.4*WIN_HEIGHT
+            self.rect.x = 0.875*WIN_WIDTH
+            self.rect.y = 0.8*WIN_HEIGHT
 
         self.x_step = 5
         self.y_step = 5
@@ -80,6 +81,9 @@ class Base_Hero(pygame.sprite.Sprite):
     def lock(self):
         self.locked = True
 
+    def unlock(self):
+        self.locked = False
+
     def update(self, *args):
 
         keys = args[0]
@@ -92,15 +96,21 @@ class Base_Hero(pygame.sprite.Sprite):
         if keys[self.first_cast] and not self.locked:
             time = pygame.time.get_ticks()
             if time - self.first_cast_pressed > 1000:
-                Bullet((self.rect.x+self.rect.width, self.rect.y+self.rect.height//2), self.orientation, 
-                    pygame.sprite.GroupSingle(self.get_opponent()))
+                if self.orientation == "leftward":
+                    Bullet((self.rect.x+self.rect.width, self.rect.y+self.rect.height//2), self.orientation, 
+                        pygame.sprite.GroupSingle(self.get_opponent()))
+                else:
+                    Bullet((self.rect.x, self.rect.y+self.rect.height//2), self.orientation, 
+                        pygame.sprite.GroupSingle(self.get_opponent()))
                 self.first_cast_pressed = time
 
+        x = 0
+        y = 0
         #movements
         if self.mode == "player" and not self.locked:
             x = self.x_step * (keys[self.right] - keys[self.left])
             y = self.y_step* (keys[self.down] - keys[self.up])
-        else:#auto
+        elif not self.locked:#auto
             x = 0
             delta_y = self.rect.y - self.get_opponent().rect.y
             y = -self.y_step if delta_y>self.y_step else (self.y_step if delta_y<-self.y_step else 0) #if elif else
@@ -142,7 +152,8 @@ class HeroA(Base_Hero):
     def __init__(self, control_config, orientation):
         super().__init__(control_config, orientation, HeroA.thumbnail)
         self.max_xp = 100
-        self.y_step = 8
+        if self.mode == "player":
+            self.y_step = 8
 
     def update(self, *args):
         keys = args[0]
@@ -156,13 +167,10 @@ class HeroB(Base_Hero):
     def __init__(self, control_config, orientation):
         super().__init__(control_config, orientation, HeroB.thumbnail)
         self.max_xp = 100
+        if self.mode == "player":
+            self.y_step = 8
 
     def update(self, *args):
         keys = args[0]
         events = args[1]
         super().update(keys)
-        #for event in events:
-            #if event.type == INCREASE_RADIUS:
-                #print(":)") #  использовать для анимаций?
-
-    #создает стенку которая отражает пули (добавляем в group для коллизии движения и отдельную  группу для коллизии пули)

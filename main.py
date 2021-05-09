@@ -7,7 +7,7 @@ from utils import terminate
 sc = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
 from menu import start_screen
 from heroes import HeroA, HeroB
-from arena import Border, Particle, create_particles
+from arena import Border, Particle, create_particles, CountDown
 
 if __name__ == "__main__":
     # first player == A player == left player
@@ -27,18 +27,34 @@ if __name__ == "__main__":
     heroB.mode = game_config.get("right_player_mode")
 
     clock = pygame.time.Clock()
-    FPS = 30
-    #end game animation
+    FPS = 40
+
+    #start game animation config
+    heroA.lock()
+    heroB.lock()
+    start_phase = True
+
+    #end game animation config
     created_particles = 0
+    end_animation_not_started = True
     particle_x_start = None 
     particle_y_start = None
 
-    #start_game animation
+    #start game animation
+    if heroA.mode == "player":
+        CountDown(WIN_WIDTH//4, WIN_HEIGHT//2)
+    if heroB.mode == "player":
+        CountDown(3*WIN_WIDTH//4, WIN_HEIGHT//2)
 
-    #pygame.time.set_timer(INCREASE_RADIUS, 1000) для анимаций
     #gameloop
     running = True
     while running:
+        #start control
+        if not countdown_sprite.sprites() and start_phase:
+            heroA.unlock()
+            heroB.unlock()
+            start_phase = False
+
         #stop condition
         if created_particles > 10:
             pygame.time.set_timer(CREATE_PARTICLES, 0)
@@ -57,12 +73,14 @@ if __name__ == "__main__":
         all_sprites.update(keys, events)
 
         loser = heroA if heroA.xp <= 0 else (heroB if heroB.xp <= 0 else None) #loser is always one
-        if loser and loser.xp <= 0: # game end animation creation; if only once
-            #if will only perform once
-            loser.xp = 1
-
+        if loser and end_animation_not_started: # game end animation creation; if only once
+            
+            end_animation_not_started = False
             heroA.lock()
             heroB.lock()
+            for bullet in bullets_sprites.sprites():
+                bullet.kill()
+
             if loser.orientation == "leftward":
                 particle_x_start = range(WIN_WIDTH//8 + WIN_WIDTH//2, 3*WIN_WIDTH//8+ WIN_WIDTH//2)
             else:
@@ -70,8 +88,6 @@ if __name__ == "__main__":
             particle_y_start = range(WIN_HEIGHT//8, 3*WIN_HEIGHT//8)
             pygame.time.set_timer(CREATE_PARTICLES, 500)
 
-        elif not particles_sprites.sprites:
-            running = False
 
         sc.fill(WHITE)
         all_sprites.draw(sc)

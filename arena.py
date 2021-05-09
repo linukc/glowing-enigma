@@ -45,6 +45,43 @@ class Particle(pygame.sprite.Sprite):
             self.kill()
 
 
+class CountDown(pygame.sprite.Sprite):
+    def __init__(self, x, y): # x and y - axis of symmetry
+        super().__init__(all_sprites)
+        self.add(countdown_sprite)
+        self.x = x
+        self.y = y
+        self.frames = []
+        self.current_frame = 0
+        self.cut_sheet(load_image("countdown.jpg"), 5, 1)
+        self.frames.append(load_image("start.jpg", -1))
+
+        self.image = self.frames[self.current_frame]
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x - self.rect.width // 2
+        self.rect.y = self.y - self.rect.height // 2
+
+        self.start_time = pygame.time.get_ticks()
+
+    def cut_sheet(self, sheet, columns, rows):
+        rect = pygame.Rect(0, 0, sheet.get_width() // columns, 
+                                sheet.get_height() // rows)
+        for j in range(rows):
+            for i in range(columns):
+                frame_location = (rect.w * i, rect.h * j)
+                self.frames.append(sheet.subsurface(pygame.Rect(
+                    frame_location, rect.size)))
+
+    def update(self, *args):
+        if pygame.time.get_ticks() - self.start_time >= 1000:
+            self.current_frame += 1
+            self.image = self.frames[min(self.current_frame, 5)]
+            self.start_time = pygame.time.get_ticks()
+
+        if self.current_frame == 6:
+            self.kill()
+
+
 def create_particles(position, screen_rect):
     particle_count = 20
     numbers = range(-5, 6)

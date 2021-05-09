@@ -26,5 +26,7 @@ horizontal_borders = pygame.sprite.Group()
 vertical_borders = pygame.sprite.Group()
 heroes_sprites = pygame.sprite.Group()
 particles_sprites = pygame.sprite.Group()
+countdown_sprite = pygame.sprite.Group()
+bullets_sprites = pygame.sprite.Group()
 
 CREATE_PARTICLES = pygame.USEREVENT + 1 #24 to 32
