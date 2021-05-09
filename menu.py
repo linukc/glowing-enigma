@@ -83,25 +83,21 @@ def start_screen(surface, heroA, heroB):
 
     left_player_text = {"title": "Игрок 1",
                         "description": ["1 Способность (клавиша R):",
-                                        "описание 1",
+                                        "Стреляет с перезарядкой в 1 секунду; Урон 10",
                                         "2 Способность (клавиша T):",
-                                        "описание 2",
-                                        "3 Способность (клавиша Y)",
-                                        "описание 3",
+                                        "Раз в 7 секунд создает несколь дист. бомб; Урон 20",
                                         "Чтобы перемещать героя", "нажимайте клавишы W A S D"]}
 
     right_player_text = {"title": "Игрок 2",
                         "description": ["1 Способность (клавиша 1NUM):",
-                                        "описание 1",
+                                        "Стреляет с перезарядкой в 1 секунду; Урон 10",
                                         "2 Способность (клавиша 2NUM):",
                                         "описание 2",
-                                        "3 Способность (клавиша 3NUM)",
-                                        "описание 3",
-                                        "Чтобы перемещать героя нажимайте стрелки",
+                                        "Раз в 7 секунд создает несколь дист. бомб; Урон 20",
                                         "P.S NUM это цифры справа от стрелок"]}
 
-    arrange_content(surface, text=left_player_text, width_border=0.1*WIN_WIDTH, image=heroA.thumbnail)
-    arrange_content(surface, text=right_player_text, width_border=0.6*WIN_WIDTH, image=heroB.thumbnail)
+    arrange_content(surface, text=left_player_text, width_border=0.05*WIN_WIDTH, image=heroA.thumbnail)
+    arrange_content(surface, text=right_player_text, width_border=0.55*WIN_WIDTH, image=heroB.thumbnail)
     pygame.display.flip()
 
     button_left_single = Button(surface, (0.1*WIN_WIDTH, 0.9*WIN_HEIGHT), text="Игрок")

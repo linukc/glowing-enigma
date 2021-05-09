@@ -4,6 +4,39 @@ from config import *
 from utils import load_image
 
 
+class Bomb(pygame.sprite.Sprite):
+    image = load_image("bomb.png")
+    image_boom = load_image("boom.png")
+
+    def __init__(self, width_range, height_range, opponent):
+        super().__init__(all_sprites)
+        self.add(bombs_sprites)
+        self.image = Bomb.image
+        self.rect = self.image.get_rect()
+        self.rect.x = random.choice(width_range)
+        self.rect.y = random.choice(height_range)
+        self.opponent = opponent
+        self.is_exploded = False
+        self.init_time = pygame.time.get_ticks()
+
+    def update(self, *args):
+        self.rect = self.rect.move(random.randrange(3) - 1, 
+                                   random.randrange(3) - 1)
+        if pygame.time.get_ticks() - self.init_time >= 1000:
+            self.is_exploded = True
+            self.image = self.image_boom
+        if pygame.time.get_ticks() - self.init_time >= 2000:
+            self.kill()
+        if pygame.sprite.spritecollideany(self, self.opponent) and self.is_exploded:
+            self.opponent.sprite.xp -= 20
+            self.kill()
+        if pygame.sprite.spritecollideany(self, bullets_sprites) and not self.is_exploded:
+            self.is_exploded = True
+            self.image = self.image_boom
+            bullet = pygame.sprite.spritecollide(self, bullets_sprites, False)[0]
+            bullet.kill()
+
+
 class Bullet(pygame.sprite.Sprite):
     image = load_image("bullet.png")
 
@@ -28,7 +61,7 @@ class Bullet(pygame.sprite.Sprite):
             self.rect = self.rect.move((-self.vx, 0))
         
         if pygame.sprite.spritecollideany(self, self.opponent):
-            self.opponent.sprite.xp -= 20
+            self.opponent.sprite.xp -= 10
             self.kill()
 
 
@@ -50,6 +83,8 @@ class Base_Hero(pygame.sprite.Sprite):
         self.first_cast_pressed = pygame.time.get_ticks()
 
         self.second_cast = control_config.get("second_cast")
+        self.second_cast_pressed = pygame.time.get_ticks()
+
         self.third_cast = control_config.get("third_cast")
 
         self.orientation = orientation
@@ -84,6 +119,13 @@ class Base_Hero(pygame.sprite.Sprite):
     def unlock(self):
         self.locked = False
 
+    def set_mode(self, mode):
+        self.mode = mode
+        if self.mode == "player":
+            self.xp = 50
+            self.max_xp = 50
+            self.y_step = 7
+
     def update(self, *args):
 
         keys = args[0]
@@ -103,6 +145,20 @@ class Base_Hero(pygame.sprite.Sprite):
                     Bullet((self.rect.x, self.rect.y+self.rect.height//2), self.orientation, 
                         pygame.sprite.GroupSingle(self.get_opponent()))
                 self.first_cast_pressed = time
+
+        #second cast (random bombs)
+        if keys[self.second_cast] and not self.locked:
+            time = pygame.time.get_ticks()
+            if time - self.second_cast_pressed > 7000:
+                if self.orientation == "leftward":
+                    for _ in range(10):
+                        Bomb(range(WIN_WIDTH//2 + 5, int(0.9*WIN_WIDTH)), range(6, int(0.9*WIN_HEIGHT)),
+                                        pygame.sprite.GroupSingle(self.get_opponent()))
+                else:
+                    for _ in range(10):
+                        Bomb(range(6, int(0.9*WIN_WIDTH//2)), range(6, int(0.9*WIN_HEIGHT)),
+                                        pygame.sprite.GroupSingle(self.get_opponent()))
+                self.second_cast_pressed = time
 
         x = 0
         y = 0
@@ -151,9 +207,6 @@ class HeroA(Base_Hero):
 
     def __init__(self, control_config, orientation):
         super().__init__(control_config, orientation, HeroA.thumbnail)
-        self.max_xp = 100
-        if self.mode == "player":
-            self.y_step = 8
 
     def update(self, *args):
         keys = args[0]
@@ -166,9 +219,6 @@ class HeroB(Base_Hero):
 
     def __init__(self, control_config, orientation):
         super().__init__(control_config, orientation, HeroB.thumbnail)
-        self.max_xp = 100
-        if self.mode == "player":
-            self.y_step = 8
 
     def update(self, *args):
         keys = args[0]

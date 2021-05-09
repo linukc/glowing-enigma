@@ -23,8 +23,8 @@ if __name__ == "__main__":
     Border(WIN_WIDTH // 2, 5, WIN_WIDTH // 2, WIN_HEIGHT - 5)
 
     game_config = start_screen(sc, heroA, heroB)
-    heroA.mode = game_config.get("left_player_mode")
-    heroB.mode = game_config.get("right_player_mode")
+    heroA.set_mode(game_config.get("left_player_mode"))
+    heroB.set_mode(game_config.get("right_player_mode"))
 
     clock = pygame.time.Clock()
     FPS = 40
@@ -80,6 +80,8 @@ if __name__ == "__main__":
             heroB.lock()
             for bullet in bullets_sprites.sprites():
                 bullet.kill()
+            for bomb in bombs_sprites.sprites():
+                bomb.kill()
 
             if loser.orientation == "leftward":
                 particle_x_start = range(WIN_WIDTH//8 + WIN_WIDTH//2, 3*WIN_WIDTH//8+ WIN_WIDTH//2)
