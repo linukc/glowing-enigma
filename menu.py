@@ -2,6 +2,7 @@ import pygame
 import sys
 
 from config import *
+from utils import load_image
 
 TITLE_FONT = pygame.font.Font(None, 50)
 TITLE_COLOR = WHITE
@@ -53,11 +54,6 @@ class Button(object):
 
     def pressed(self):
         return self._is_pressed
-
-
-def terminate():
-    pygame.quit()
-    sys.exit()
 
 
 def arrange_content(surface, text, width_border, image):

@@ -1,6 +1,6 @@
 import pygame
 
-WIN_WIDTH = 1000
+WIN_WIDTH = 1000 #must div by 8
 WIN_HEIGHT = 700
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -25,5 +25,6 @@ all_sprites = pygame.sprite.Group()
 horizontal_borders = pygame.sprite.Group()
 vertical_borders = pygame.sprite.Group()
 heroes_sprites = pygame.sprite.Group()
+particles_sprites = pygame.sprite.Group()
 
-#INCREASE_RADIUS = pygame.USEREVENT + 1 #24 to 32
+CREATE_PARTICLES = pygame.USEREVENT + 1 #24 to 32

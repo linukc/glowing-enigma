@@ -1,20 +1,7 @@
 import pygame
-import os 
 import random
 from config import *
-
-
-def load_image(name, color_key=None):
-    fullname = os.path.join('images', name)
-    image = pygame.image.load(fullname).convert()
-
-    if color_key is not None:
-        if color_key == -1:
-            color_key = image.get_at((0, 0))
-        image.set_colorkey(color_key)
-    else:
-        image = image.convert_alpha()
-    return image
+from utils import load_image
 
 
 class Bullet(pygame.sprite.Sprite):
@@ -31,7 +18,7 @@ class Bullet(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = pos[0]
         self.rect.y = pos[1]
-        self.vx = 15
+        self.vx = 20
 
     def update(self, *args):
         if self.orientation == "leftward":
@@ -40,7 +27,7 @@ class Bullet(pygame.sprite.Sprite):
             self.rect = self.rect.move((-self.vx, 0))
         
         if pygame.sprite.spritecollideany(self, self.opponent):
-            self.opponent.sprite.xp -= 5
+            self.opponent.sprite.xp -= 20
             self.kill()
 
 
@@ -51,6 +38,7 @@ class Base_Hero(pygame.sprite.Sprite):
         self.add(heroes_sprites)
         self.control_config = control_config
         self.mode = "auto"
+        self.locked = False
 
         self.up = control_config.get("up")
         self.down = control_config.get("down")
@@ -89,7 +77,11 @@ class Base_Hero(pygame.sprite.Sprite):
     def get_opponent(self):
         return [sprite for sprite in heroes_sprites.sprites() if sprite != self][0] #only 2 heroes
 
+    def lock(self):
+        self.locked = True
+
     def update(self, *args):
+
         keys = args[0]
         #XP bar
         pygame.draw.rect(self.image, WHITE, (0, 0, self.rect.width, 10), border_radius=2)
@@ -97,7 +89,7 @@ class Base_Hero(pygame.sprite.Sprite):
         pygame.draw.rect(self.image, BLACK, (0, 0, self.rect.width, 10), width=1, border_radius=2)
 
         #base cast (shot)
-        if keys[self.first_cast]:
+        if keys[self.first_cast] and not self.locked:
             time = pygame.time.get_ticks()
             if time - self.first_cast_pressed > 1000:
                 Bullet((self.rect.x+self.rect.width, self.rect.y+self.rect.height//2), self.orientation, 
@@ -105,7 +97,7 @@ class Base_Hero(pygame.sprite.Sprite):
                 self.first_cast_pressed = time
 
         #movements
-        if self.mode == "player":
+        if self.mode == "player" and not self.locked:
             x = self.x_step * (keys[self.right] - keys[self.left])
             y = self.y_step* (keys[self.down] - keys[self.up])
         else:#auto
